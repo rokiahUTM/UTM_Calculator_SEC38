@@ -2,6 +2,8 @@ package com.example.utmcalculator;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -37,17 +39,10 @@ public class MainActivity extends AppCompatActivity {
         Button calculateBtn = (Button) findViewById(R.id.calculateGPABtn);
         Button resetBtn = (Button) findViewById(R.id.resetBtn);
 
-        displayGradePoint();
-
-        calculateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                int credit = Integer.parseInt(courseCreditET.getText().toString());
-                String grade = courseGradeET.getText().toString();
-                Double gradePoint = credit*getGradePoint(grade);
-                gradePointTV.setText(gradePoint.toString());
-            }
-        });
+        courseGradeET.addTextChangedListener(new EditTextChangeText());
+        courseCreditET.addTextChangedListener(new EditTextChangeText());
+        courseGrade2ET.addTextChangedListener(new EditTextChangeText());
+        courseCredit2ET.addTextChangedListener(new EditTextChangeText());
 
     }
 
@@ -90,55 +85,66 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayGradePoint(){
-        courseGradeET.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        int credit=0;
+        String grade="E";
+        Double gradePoint=0.0;
+        boolean displayPoint = true;
+        boolean displayPoint2 = true;
 
-            }
+        // check whether both the fields are empty or not for first Course
+        if (isEmpty(courseCreditET.length())) {
+            courseCreditET.setError("This field is required");
+            displayPoint = false;
+        }
+        if (isEmpty(courseGradeET.length())){
+            courseGradeET.setError("This field is required");
+            displayPoint = false;
+        }
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        // check whether both the fields are empty or not for second Course
+        if (isEmpty(courseCredit2ET.length())) {
+            courseCredit2ET.setError("This field is required");
+            displayPoint2 = false;
+        }
+        if (isEmpty(courseGrade2ET.length())){
+            courseGrade2ET.setError("This field is required");
+            displayPoint2 = false;
+        }
 
-            }
+        if(displayPoint==true) {
+            credit = Integer.parseInt(courseCreditET.getText().toString());
+            grade = courseGradeET.getText().toString();
+            gradePoint = credit * getGradePoint(grade);
+            gradePointTV.setText(gradePoint.toString());
+        }
+        else gradePointTV.setText("0.0");
 
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+        if(displayPoint2==true) {
+            credit = Integer.parseInt(courseCredit2ET.getText().toString());
+            grade = courseGrade2ET.getText().toString();
+            gradePoint = credit * getGradePoint(grade);
+            gradePoint2TV.setText(gradePoint.toString());
+            Log.d("Test","Line 125");
+        }
+        else gradePoint2TV.setText("0.0");
 
-        courseGrade2ET.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    }
 
-            }
+    class EditTextChangeText implements TextWatcher{
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
 
-            }
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            displayGradePoint();
+        }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-                boolean displayPoint = true;
-                // check whether both the fields are empty or not
-                if (isEmpty(courseCredit2ET.length())) {
-                    courseCredit2ET.setError("This field is required");
-                    displayPoint = false;
-                }
-                if (isEmpty(courseCredit2ET.length())){
-                    courseCredit2ET.setError("This field is required");
-                    displayPoint = false;
-                }
+        @Override
+        public void afterTextChanged(Editable s) {
 
-                if(displayPoint==true) {
-                    int credit = Integer.parseInt(courseCredit2ET.getText().toString());
-                    String grade = courseGrade2ET.getText().toString();
-                    Double gradePoint = credit * getGradePoint(grade);
-                    gradePoint2TV.setText(gradePoint.toString());
-                }
-            }
-        });
-
+        }
     }
 
 }
